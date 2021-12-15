@@ -1,0 +1,8 @@
+extends layout
+block content
+    .container
+        .row
+            div.col-md-auto(style='margin: 10px auto; border: 1px solid #e5e5e5; padding: 10px; border-radius: 5px;')
+                h1 #{blog[0].title}
+                img(src='/images/tree.jpg', alt='')(style='display: block; margin: 0 auto;border-radius: 10px')
+                p.text-center(style='font-size: 24px; font-weight: 400;') #{blog[0].content}

@@ -1,0 +1,48 @@
+extends layout
+block content
+    .container
+    .row
+        .col-sm-9.col-md-7.col-lg-5.mx-auto
+            .card.border-0.shadow.rounded-3.my-5
+                .card-body.p-4.p-sm-5
+                    h5.card-title.text-center.mb-5.fw-light.fs-5 Add Blog
+                    form#form.form(action='/add-blog', method='POST' enctype="multipart/form-data")
+                        .form-group
+                            label(for='formGroupExampleInput') Title
+                            input#formGroupExampleInput.form-control(type='text' required='true' name='title')
+                        br
+                        .form-group
+                            label(for='formGroupExampleInput2') Content
+                            textarea#formGroupExampleInput2.form-control(type='textarea' required='true' name='content')
+                        br 
+                        .form-group
+                            input#formGroupExampleInput3.form-control(type='file' name='imageupload' accept='image/*')
+                        br
+                        .text-center
+                            button.btn.btn-primary.btn-login.text-uppercase.fw-bold.text-center(type='submit') Add Blog
+                        br 
+                        .form-group
+                            input#formGroupExampleInput4.form-control(type='text' name='imagestr' value='')(style='display: none')
+    
+    script.
+        function onimageUploaded() {
+            let base64String = ''
+            var file = document.querySelector(
+            'input[type=file]')['files'][0];
+  
+                var reader = new FileReader();
+                console.log("next");
+                
+                reader.onload = function () {
+                    base64String = reader.result
+            
+                    imageBase64Stringsep = base64String;
+            
+                    // alert(imageBase64Stringsep);
+                    console.log(base64String);
+                    console.log(base64String.length)
+                    document.getElementById('formGroupExampleInput4').value = base64String;
+                }
+                reader.readAsDataURL(file);
+                //- return base64String;
+        }

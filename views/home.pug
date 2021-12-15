@@ -1,0 +1,57 @@
+extends layout
+block content
+    nav.navbar.navbar-expand-sm.navbar-dark.bg-dark
+      a.navHead(href='#') Blog Post
+      button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarsExample03', aria-controls='navbarsExample03', aria-expanded='false', aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+      #navbarsExample03.collapse.navbar-collapse
+        ul.navbar-nav.mr-auto
+          li.nav-item.active
+            a.nav-link(href='#')
+              | Home 
+          li.nav-item
+            a.nav-link(href='/add-blog') Add Post
+        form.form-inline
+          .input-group
+            .input-group-prepend
+              span#basic-addon1.input-group-text @
+            input.form-control(type='text' placeholder='Search user' data-target="modal1")
+
+        //- ul.navbar-nav.float-right
+        //-     li.nav-item
+        //-         a.nav-link(href='/login') Login
+    each blog in blogs
+        .card(style='width: 25rem;margin: 10px auto')
+            h5.card-header(style="text-transform: capitalize") #{blog.posted_by}
+            img.card-img-top(src=`http://localhost:4000/${blog.image}`, alt='Card image')
+            .card-body
+                h5.card-title.text-left #{blog.title}
+                p.card-text.text-left #{blog.content}
+            .card-footer
+                div
+                  p#react.card-link.text-center(href="#" onClick="handlefunction()")(style='color:blue; cursor:pointer; margin:0') React to post
+                  p(style='cursor:pointer; margin:0')#emojis.text-center
+                .input-group.mb-3
+                  input.form-control(type='text' placeholder="Comment")
+                  .input-group-append
+                    button.btn.btn-outline-secondary(type='button') Post
+                //- input.form-control(type='text' placeholder='Comment')
+                //- a.card-link(href="#")(style='text-decoration: none') Share
+
+                //- div.text-left
+                //-     a.btn.btn-primary(href=`/blog/${blog.id}`) Go to Blog
+
+    script.
+      function handlefunction() {
+        fetch('/reactions')
+          .then(res => {return res.text()})
+          .then(data => {
+            //- console.log(JSON.parse(data).emojiList)
+            document.getElementById('react').innerHTML = ""
+            for (let i of JSON.parse(data).emojiList)  {
+              document.getElementById('emojis').innerHTML += i.emoji
+              document.getElementById('emojis').innerHTML += "  "
+            }
+          })
+          .catch(err => console.log('err', err))
+      }
