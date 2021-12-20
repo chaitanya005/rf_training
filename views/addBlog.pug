@@ -9,14 +9,14 @@ block content
                     form#form.form(action='/add-blog', method='POST' enctype="multipart/form-data")
                         .form-group
                             label(for='formGroupExampleInput') Title
-                            input#formGroupExampleInput.form-control(type='text' required='true' name='title')
+                            input#formGroupExampleInput.form-control(type='text' required='true' name='title' minlength='5' maxlength='10')
                         br
                         .form-group
                             label(for='formGroupExampleInput2') Content
-                            textarea#formGroupExampleInput2.form-control(type='textarea' required='true' name='content')
+                            input#formGroupExampleInput2.form-control(type='textarea' required='true' name='content' minlength='2' maxlength='50')
                         br 
                         .form-group
-                            input#formGroupExampleInput3.form-control(type='file' name='imageupload' accept='image/*')
+                            input#formGroupExampleInput3.form-control(type='file' name='imageupload' accept='image/*' required='true')
                         br
                         .text-center
                             button.btn.btn-primary.btn-login.text-uppercase.fw-bold.text-center(type='submit') Add Blog

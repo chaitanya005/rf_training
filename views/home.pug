@@ -11,15 +11,15 @@ block content
               | Home 
           li.nav-item
             a.nav-link(href='/add-blog') Add Post
-        form.form-inline
-          .input-group
-            .input-group-prepend
-              span#basic-addon1.input-group-text @
-            input.form-control(type='text' placeholder='Search user' data-target="modal1")
+        //- form.form-inline
+        //-   .input-group
+        //-     .input-group-prepend
+        //-       span#basic-addon1.input-group-text @
+        //-     input.form-control(type='text' placeholder='Search user' data-target="modal1")
 
-        //- ul.navbar-nav.float-right
-        //-     li.nav-item
-        //-         a.nav-link(href='/login') Login
+        ul.navbar-nav.float-right
+            li.nav-item
+                a.nav-link(href='/logout') Logout
     each blog in blogs
         .card(style='width: 25rem;margin: 10px auto')
             h5.card-header(style="text-transform: capitalize") #{blog.posted_by}
@@ -28,18 +28,24 @@ block content
                 h5.card-title.text-left #{blog.title}
                 p.card-text.text-left #{blog.content}
             .card-footer
-                div
-                  p#react.card-link.text-center(href="#" onClick="handlefunction()")(style='color:blue; cursor:pointer; margin:0') React to post
-                  p(style='cursor:pointer; margin:0')#emojis.text-center
+                div(style="display: flex; justify-content: space-between; margin: 5px")
+                  div(style="display: flex; gap: 0.3rem;")
+                    p#reactions.card-link.text-center(onClick=`handleReaction(${blog.id})`)(style='color:blue; cursor:pointer; margin:0; font-size: 18px;') &#128151; #{blog.heart}
+                  p#react.card-link.text-center(data-target='#exampleModalLong' data-toggle='modal' onClick=`handleViewComments(${blog.id})`)(style='color:blue; cursor:pointer; margin:0') View Comments
                 .input-group.mb-3
-                  input.form-control(type='text' placeholder="Comment")
+                  input(id=blog.id).form-control(type='text' placeholder="Comment" name="comment")
                   .input-group-append
-                    button.btn.btn-outline-secondary(type='button') Post
-                //- input.form-control(type='text' placeholder='Comment')
-                //- a.card-link(href="#")(style='text-decoration: none') Share
+                    button.btn.btn-outline-secondary(type='button' onClick=`handleComment(${blog.id})`) Post
 
-                //- div.text-left
-                //-     a.btn.btn-primary(href=`/blog/${blog.id}`) Go to Blog
+    #exampleModalLong.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLongTitle' aria-hidden='true')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            h5#exampleModalLongTitle.modal-title Comments
+            button.btn.btn-outline-secondary.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') &#x2715;
+          .modal-body#all_comments
+            |
 
     script.
       function handlefunction() {
@@ -54,4 +60,64 @@ block content
             }
           })
           .catch(err => console.log('err', err))
+      }
+
+      function handleComment(blogId) {
+        let comment = document.getElementById(`${blogId}`).value
+        console.log(blogId, comment)
+        //- console.log(blog)
+        if (comment.length == 0) return; 
+        fetch('/post-comment', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({comment:comment, blogId: blogId})
+        })
+        .then(res => {return res.text()})
+        .then(res => {
+          console.log(res) 
+          document.getElementById(`${blogId}`).value = " " 
+          })
+        .catch(err => console.log('err', err))
+      }
+
+      function handleReaction(blogId) {
+        let reaction = document.getElementById("reactions").innerText
+        console.log(blogId)
+        fetch('/post-reaction', {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({blogId: blogId})
+        })
+        .then(res => {return res.text()})
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+      }
+
+      function handleViewComments(blogId) {
+        //- console.log(blogId)
+        fetch('/getComments', {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({blogId: blogId})
+        })
+        .then(res => {return res.text()})
+        .then(res => {
+          document.getElementById('all_comments').innerHTML = " "
+          if (JSON.parse(res).allComments.length === 0) {
+            document.getElementById('all_comments').innerHTML = `<h3 style="text-align: center; color: #eee;">No Comments Yet</h3>`
+          }
+          for (let i of JSON.parse(res).allComments)  {
+            document.getElementById('all_comments').innerHTML += `<div style="box-shadow: 0 0 2px 2px lightblue; border-radius: 15px; border: 0px solid #000"><h5 style="padding: 0px 10px; padding-top: 10px; color: blue; text-transform: capitalize">${i.posted_by}</h5><p style="padding: 10px 10px;">${i.comment}</p></div>`
+          }
+        })
+        .catch(err => console.log('err', err))
       }
